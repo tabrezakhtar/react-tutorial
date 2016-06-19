@@ -1,23 +1,30 @@
-/*
-- CommentBox
-  - CommentList
-    - Comment
-  - CommentForm
-*/
-// tutorial1.js
-var data = [
-  {id: 1, author: "Pete Hunt", text: "This is one comment"},
-  {id: 2, author: "Jordan Walke", text: "This is *another* comment"},
-  {id: 3, author: "dude", text: "hello"}
-];
+
 var CommentBox = React.createClass({
     // tutorial8.js
+    getInitialState: function() {
+      return {data: []};
+    },
+
+    componentDidMount: function() {
+        $.ajax({
+          url: this.props.url,
+          dataType: 'json',
+          cache: false,
+          success: function(data) {
+            this.setState({data: data});
+          }.bind(this),
+          error: function(xhr, status, err) {
+            console.error(this.props.url, status, err.toString());
+          }.bind(this)
+        });
+      },
+
 
     render: function() {
         return (
               <div className="commentBox">
                     <h1>Comments</h1>
-                    <CommentList data={this.props.data} />
+                    <CommentList data={this.state.data} />
                     <CommentForm />
               </div>
         );
@@ -90,5 +97,5 @@ var Comment = React.createClass({
 
 
 ReactDOM.render(
-    <CommentBox data={data} />, document.getElementById('content')
+    <CommentBox url="/api/comments" />, document.getElementById('content')
 );
